@@ -1,5 +1,31 @@
 # react-doctor
 
+## 0.2.15
+
+### Patch Changes
+
+- [#605](https://github.com/millionco/react-doctor/pull/605) [`4861f37`](https://github.com/millionco/react-doctor/commit/4861f37a55eb12909c7faca170ec5c9fd636f9a9) Thanks [@rayhanadev](https://github.com/rayhanadev)! - Update the dead-code analysis engine (`deslop-js`) to `0.0.14` so the published CLI's unused-file / dead-code detection runs on the latest release. The CLI previously pinned `^0.0.13` while the internal core engine was already on `0.0.14`; this aligns both on a single version and drops the duplicate from the lockfile.
+
+- [#607](https://github.com/millionco/react-doctor/pull/607) [`5dff3b5`](https://github.com/millionco/react-doctor/commit/5dff3b5a5da033e0ae4cd5dd432a74d36ca7d143) Thanks [@rayhanadev](https://github.com/rayhanadev)! - Fix `react-doctor --staged` (and other scans) hanging after the diagnostics summary is already printed. When an adopted lint config crashed oxlint on the first attempt, the oxlint runner's per-batch progress timer was left running while the scan silently retried with `extends` stripped — so the run finished and printed results, but the orphaned `setInterval` kept the Node event loop alive and the process never returned control to the shell. The batch loop now clears the timer in a `finally`, so it's always cleaned up even when a batch throws. See [#599](https://github.com/millionco/react-doctor/issues/599).
+
+- [#601](https://github.com/millionco/react-doctor/pull/601) [`5f7cc7c`](https://github.com/millionco/react-doctor/commit/5f7cc7c36ed62b0c2264916f2aeb694e5713e821) Thanks [@rayhanadev](https://github.com/rayhanadev)! - Publish a JSON Schema for `react-doctor.config.json` at `https://react.doctor/schema/config.json`.
+
+  Pointing `$schema` at the URL enables editor autocomplete, hover docs from the interface JSDoc, and typo warnings in any editor that understands JSON Schema. Closes [#497](https://github.com/millionco/react-doctor/issues/497).
+
+  ```jsonc
+  {
+    "$schema": "https://react.doctor/schema/config.json",
+    "lint": true
+  }
+  ```
+
+  The schema is generated from `packages/core/src/types/config.ts` via `pnpm build:schema` and checked into `packages/website/public/schema/config.json`.
+
+- [#606](https://github.com/millionco/react-doctor/pull/606) [`fe01e57`](https://github.com/millionco/react-doctor/commit/fe01e573a91a36316c858ad1e7c12a5fe18c1039) Thanks [@rayhanadev](https://github.com/rayhanadev)! - Redact secrets and PII from diagnostic output. Every diagnostic's `message`/`help` is now scrubbed for API keys, tokens, private keys, JWTs, credentialed URLs, and email addresses before it reaches the terminal, the JSON report, or the score API — so react-doctor never echoes or transmits a secret embedded in your source. Provider tokens keep their non-secret, type-identifying prefix (e.g. `sk_live_<redacted>`, `ghp_<redacted>`) so you can tell which credential leaked while the secret itself stays masked.
+
+- Updated dependencies []:
+  - oxlint-plugin-react-doctor@0.2.15
+
 ## 0.2.14
 
 ### Patch Changes
